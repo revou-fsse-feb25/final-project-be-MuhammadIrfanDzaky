@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -8,71 +7,86 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum UserRole {
   SUPER_ADMIN
   FIELD_OWNER
-  REGULER_USER
+  REGULAR_USER
 }
 
 enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
+  COMPLETED
 }
 
 enum PaymentStatus {
   PENDING
-  COMPLETED
-  FAILED
+  PAID
+  REFUNDED
 }
 
 model User {
   id        Int      @id @default(autoincrement())
-  name      String
   email     String   @unique
+  name      String
+  phone     String?
+  avatar    String?
+  role      UserRole @default(REGULAR_USER)
+  password  String
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  courts   Court[] // User one-to-many Courts
+  bookings Booking[] // User one-to-many Bookings
+
+  @@index([email])
+
+  @@map("users")
 }
 
-model FutsalCourt {
-  id        Int      @id @default(autoincrement())
-  name      String
-  location  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Court {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String
+  location     String
+  pricePerHour Float
+  image        String
+  facilities   String[]
+  isActive     Boolean  @default(true)
+  ownerId      Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade) // Courts Many-to-One Owner
+  bookings Booking[] // Court one-to-many Bookings
+
+  @@index([ownerId])
+
+  @@map("courts")
 }
 
 model Booking {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  courtId     Int
-  startTime   DateTime
-  endTime     DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            Int           @id @default(autoincrement())
+  date          String
+  startTime     String
+  endTime       String
+  totalPrice    Float
+  status        BookingStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  notes         String?
+  userId        Int
+  courtId       Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id])
-  futsalCourt FutsalCourt @relation(fields: [courtId], references: [id])
-}
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade) // User one-to-many Bookings
+  court Court @relation(fields: [courtId], references: [id], onDelete: Cascade) // Court one-to-many Bookings
 
-model Payment {
-  id          Int      @id @default(autoincrement())
-  bookingId   Int
-  amount      Float
-  status      String   // e.g., "PENDING", "COMPLETED", "FAILED"
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  @@index([userId, courtId, date, startTime, endTime], name: "bookings_unique")
 
-  booking     Booking  @relation(fields: [bookingId], references: [id])
-}
-
-model Notification {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  message     String
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user        User     @relation(fields: [userId], references: [id])
+  @@map("bookings")
 }
