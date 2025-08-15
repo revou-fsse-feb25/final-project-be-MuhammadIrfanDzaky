@@ -8,22 +8,22 @@ datasource db {
 }
 
 enum UserRole {
-  SUPER_ADMIN
-  FIELD_OWNER
-  REGULAR_USER
+  super_admin
+  field_owner
+  regular_user
 }
 
 enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  COMPLETED
+  pending
+  confirmed
+  cancelled
+  completed
 }
 
 enum PaymentStatus {
-  PENDING
-  PAID
-  REFUNDED
+  pending
+  paid
+  refunded
 }
 
 model User {
@@ -32,7 +32,7 @@ model User {
   name      String
   phone     String?
   avatar    String?
-  role      UserRole @default(REGULAR_USER)
+  role      UserRole @default(regular_user)
   password  String
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -74,8 +74,8 @@ model Booking {
   startTime     String
   endTime       String
   totalPrice    Float
-  status        BookingStatus @default(PENDING)
-  paymentStatus PaymentStatus @default(PENDING)
+  status        BookingStatus @default(pending)
+  paymentStatus PaymentStatus @default(pending)
   notes         String?
   userId        Int
   courtId       Int
