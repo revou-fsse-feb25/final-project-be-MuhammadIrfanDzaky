@@ -2,15 +2,19 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { PrismaService } from 'prisma/prisma.service';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class AuthService {
-	constructor(private readonly jwtService: JwtService) {}
+	constructor(
+		private readonly jwtService: JwtService,
+		private readonly prisma: PrismaService,
+	) {}
 
 	async login(email: string, password: string) {
-		const user = await prisma.user.findUnique({ where: { email } });
+		const user = await this.prisma.user.findUnique({ where: { email } });
 		if (!user || !(await bcrypt.compare(password, user.password))) {
 			return null;
 		}
@@ -20,10 +24,10 @@ export class AuthService {
 	}
 
 	async register(data: any) {
-		const existing = await prisma.user.findUnique({ where: { email: data.email } });
+		const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
 		if (existing) throw new BadRequestException('Email already registered');
 		const hashed = await bcrypt.hash(data.password, 10);
-		const user = await prisma.user.create({
+		const user = await this.prisma.user.create({
 			data: {
 				...data,
 				password: hashed,

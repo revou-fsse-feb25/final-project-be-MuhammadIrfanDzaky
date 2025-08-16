@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class BookingsService {
+    constructor(private readonly prisma: PrismaService) {}
+
     async getAll() {
-        return prisma.booking.findMany(
+        return this.prisma.booking.findMany(
             { include: 
                 { user: true, court: true }
             }
@@ -14,26 +17,26 @@ export class BookingsService {
     }
 
     async getByUserId(userId: number) {
-        return prisma.booking.findMany(
+        return this.prisma.booking.findMany(
             { where: { userId }, include: { user: true, court: true } }
         );
     }
 
     async getByCourtId(courtId: number) {
-        return prisma.booking.findMany(
+        return this.prisma.booking.findMany(
             { where: { courtId }, include: { user: true, court: true } }
         );
     }
 
     async create(data: any) {
-        return prisma.booking.create({ data });
+        return this.prisma.booking.create({ data });
     }
 
     async update(id: number, data: any) {
-        return prisma.booking.update({ where: { id }, data });
+        return this.prisma.booking.update({ where: { id }, data });
     }
 
     async delete(id: number) {
-        return prisma.booking.delete({ where: { id } });
+        return this.prisma.booking.delete({ where: { id } });
     }
 }

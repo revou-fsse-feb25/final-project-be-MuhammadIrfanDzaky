@@ -1,7 +1,7 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
+import { PrismaModule } from 'prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { BookingsModule } from './bookings/bookings.module';
@@ -12,7 +12,7 @@ import { ValidationMiddleware } from './global/validation.middleware';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
 @Module({
-  imports: [UsersModule, AuthModule, BookingsModule, CourtsModule, DashboardModule, JwtModule.register({
+  imports: [PrismaModule,UsersModule, AuthModule, BookingsModule, CourtsModule, DashboardModule, JwtModule.register({
     secret: process.env.JWT_SECRET || 'secret',
     signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1d' },
   })],
