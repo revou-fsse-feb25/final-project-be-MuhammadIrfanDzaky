@@ -1,5 +1,6 @@
 import { Controller, Post, Body, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UserRole } from '@prisma/client/wasm';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +19,7 @@ export class AuthController {
 	}
 
 	@Post('register')
-	async register(@Body() body: any) {
+	async register(@Body() body: { email: string; name: string; password: string; role?: UserRole }) {
 		try {
 			return await this.authService.register(body);
 		} catch (error) {

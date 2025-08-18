@@ -1,6 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, InternalServerErrorException, NotFoundException, BadRequestException, UseGuards, Req, ForbiddenException } from '@nestjs/common';
+import type { Request } from 'express';
 import { CourtsService } from './courts.service';
+import { JwtAuthGuard } from 'src/global/jwt-auth.guard';
+import { UserRole } from '@prisma/client';
 
+@UseGuards(JwtAuthGuard)
 @Controller('courts')
 export class CourtsController {
     constructor(private readonly courtsService: CourtsService) {}
@@ -27,14 +31,23 @@ export class CourtsController {
     }
 
     @Post()
-    async create(@Body() courtData: any) {
-        try {
-            if (!courtData) throw new BadRequestException('Court data is required');
-            return await this.courtsService.create(courtData);
-        } catch (error) {
-            if (error instanceof BadRequestException) throw error;
-            throw new InternalServerErrorException('Failed to create court');
+    async create(@Body() body: any, @Req() req: Request) {
+        const user = req.user as any; // Should contain id and role from JWT
+
+        if (user.role === UserRole.super_admin) {
+        if (!body.ownerId) {
+            throw new BadRequestException('ownerId is required for admin');
         }
+        // Optionally, you can check if the ownerId exists and is a field_owner
+        return this.courtsService.create({ ...body, ownerId: body.ownerId });
+        }
+
+        if (user.role === UserRole.field_owner) {
+        // Ignore any ownerId in body, always use the authenticated user's ID
+        return this.courtsService.create({ ...body, ownerId: user.id });
+        }
+
+        throw new ForbiddenException('You do not have permission to create a court');
     }
 
     @Put(':id')

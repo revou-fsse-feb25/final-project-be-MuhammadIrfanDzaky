@@ -1,10 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaClient, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
-import { PrismaService } from 'prisma/prisma.service';
-
-const prisma = new PrismaClient();
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -15,25 +13,27 @@ export class AuthService {
 
 	async login(email: string, password: string) {
 		const user = await this.prisma.user.findUnique({ where: { email } });
-		if (!user || !(await bcrypt.compare(password, user.password))) {
-			return null;
-		}
-		const payload = { sub: user.id, email: user.email, role: user.role };
-		const token = this.jwtService.sign(payload);
-		return { token, user: { id: user.id, email: user.email, role: user.role } };
+		if (!user) throw new BadRequestException('Invalid credentials');
+		const valid = await bcrypt.compare(password, user.password);
+		if (!valid) throw new BadRequestException('Invalid credentials');
+		const token = this.jwtService.sign({ sub: user.id, role: user.role });
+		return { token, user: { id: user.id, email: user.email, name: user.name, role: user.role } };
 	}
 
-	async register(data: any) {
+	async register(data: { email: string; name: string; password: string; role?: UserRole }) {
 		const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
 		if (existing) throw new BadRequestException('Email already registered');
 		const hashed = await bcrypt.hash(data.password, 10);
 		const user = await this.prisma.user.create({
 			data: {
-				...data,
+				email: data.email,
+				name: data.name,
 				password: hashed,
 				role: data.role || UserRole.regular_user,
+				isActive: true,
 			},
 		});
-		return user;
+		const token = this.jwtService.sign({ sub: user.id, role: user.role });
+		return { token, user };
 	}
 }

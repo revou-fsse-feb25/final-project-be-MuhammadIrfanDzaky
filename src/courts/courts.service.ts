@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 
@@ -17,7 +17,21 @@ export class CourtsService {
     }
 
     async create(data: any) {
-        return this.prisma.court.create({ data });
+        const owner = await this.prisma.user.findUnique({ where: { id: data.ownerId } });
+        if (!owner || owner.role !== 'field_owner') {
+        throw new BadRequestException('ownerId must belong to a valid field_owner');
+        }
+        return this.prisma.court.create({
+        data: {
+            name: data.name,
+            description: data.description,
+            location: data.location,
+            pricePerHour: data.pricePerHour,
+            image: data.image,
+            facilities: data.facilities,
+            ownerId: data.ownerId,
+        },
+        });
     }
 
     async update(id: number, data: any) {
