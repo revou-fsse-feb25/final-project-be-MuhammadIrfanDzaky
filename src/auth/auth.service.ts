@@ -17,7 +17,12 @@ export class AuthService {
 		const valid = await bcrypt.compare(password, user.password);
 		if (!valid) throw new BadRequestException('Invalid credentials');
 		const token = this.jwtService.sign({ sub: user.id, role: user.role });
-		return { token, user: { id: user.id, email: user.email, name: user.name, role: user.role } };
+		// Return all required fields for LoginResDto.user
+		const { id, email: userEmail, name, role, isActive, createdAt, updatedAt } = user;
+		return {
+			token,
+			user: { id, email: userEmail, name, role, isActive, createdAt, updatedAt }
+		};
 	}
 
 	async register(data: { email: string; name: string; password: string; role?: UserRole }) {

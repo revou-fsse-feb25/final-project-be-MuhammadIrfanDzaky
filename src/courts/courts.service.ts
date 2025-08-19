@@ -19,18 +19,18 @@ export class CourtsService {
     async create(data: any) {
         const owner = await this.prisma.user.findUnique({ where: { id: data.ownerId } });
         if (!owner || owner.role !== 'field_owner') {
-        throw new BadRequestException('ownerId must belong to a valid field_owner');
+            throw new BadRequestException('ownerId must belong to a valid field_owner');
         }
         return this.prisma.court.create({
-        data: {
-            name: data.name,
-            description: data.description,
-            location: data.location,
-            pricePerHour: data.pricePerHour,
-            image: data.image,
-            facilities: data.facilities,
-            ownerId: data.ownerId,
-        },
+            data: {
+                name: data.name,
+                description: data.description,
+                location: data.location,
+                pricePerHour: data.pricePerHour,
+                image: data.image,
+                facilities: data.facilities,
+                ownerId: data.ownerId,
+            },
         });
     }
 

@@ -1,12 +1,21 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { CreateBookingDto } from './dto/req/create-booking.dto';
+import { UpdateBookingDto } from './dto/req/update-booking.dto';
+import { CreateBookingResDto } from './dto/res/create-booking-res.dto';
+import { UpdateBookingResDto } from './dto/res/update-booking-res.dto';
 import { BookingsService } from './bookings.service';
 
+@ApiTags('Bookings')
+@ApiBearerAuth()
 @Controller('bookings')
 export class BookingsController {
     constructor(private readonly bookingsService: BookingsService) {}
 
     @Get()
-    async getAll() {
+    @ApiOperation({ summary: 'Get all bookings' })
+    @ApiResponse({ status: 200, description: 'List of bookings.' })
+    async getAll(): Promise<CreateBookingResDto[]> {
         try {
             return await this.bookingsService.getAll();
         } catch (error) {
@@ -15,7 +24,10 @@ export class BookingsController {
     }
 
     @Get('user/:userId')
-    async getByUserId(@Param('userId') userId: string) {
+    @ApiOperation({ summary: 'Get bookings by user ID' })
+    @ApiParam({ name: 'userId', type: String })
+    @ApiResponse({ status: 200, description: 'List of bookings for a user.' })
+    async getByUserId(@Param('userId') userId: string): Promise<CreateBookingResDto[]> {
         try {
             const bookings = await this.bookingsService.getByUserId(Number(userId));
             if (!bookings) throw new NotFoundException('Bookings not found for user');
@@ -27,7 +39,10 @@ export class BookingsController {
     }
 
     @Get('court/:courtId')
-    async getByCourtId(@Param('courtId') courtId: string) {
+    @ApiOperation({ summary: 'Get bookings by court ID' })
+    @ApiParam({ name: 'courtId', type: String })
+    @ApiResponse({ status: 200, description: 'List of bookings for a court.' })
+    async getByCourtId(@Param('courtId') courtId: string): Promise<CreateBookingResDto[]> {
         try {
             const bookings = await this.bookingsService.getByCourtId(Number(courtId));
             if (!bookings) throw new NotFoundException('Bookings not found for court');
@@ -39,7 +54,9 @@ export class BookingsController {
     }
 
     @Post()
-    async create(@Body() bookingData: any) {
+    @ApiOperation({ summary: 'Create a new booking' })
+    @ApiResponse({ status: 201, description: 'Booking created.' })
+    async create(@Body() bookingData: CreateBookingDto): Promise<CreateBookingResDto> {
         try {
             if (!bookingData) throw new BadRequestException('Booking data is required');
             return await this.bookingsService.create(bookingData);
@@ -50,7 +67,10 @@ export class BookingsController {
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() bookingData: any) {
+    @ApiOperation({ summary: 'Update a booking' })
+    @ApiParam({ name: 'id', type: String })
+    @ApiResponse({ status: 200, description: 'Booking updated.' })
+    async update(@Param('id') id: string, @Body() bookingData: UpdateBookingDto): Promise<UpdateBookingResDto> {
         try {
             if (!bookingData) throw new BadRequestException('Booking data is required');
             const updated = await this.bookingsService.update(Number(id), bookingData);
@@ -63,11 +83,14 @@ export class BookingsController {
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: string) {
+    @ApiOperation({ summary: 'Delete a booking' })
+    @ApiParam({ name: 'id', type: String })
+    @ApiResponse({ status: 200, description: 'Booking deleted.' })
+    async delete(@Param('id') id: string): Promise<{ success: boolean }> {
         try {
             const deleted = await this.bookingsService.delete(Number(id));
             if (!deleted) throw new NotFoundException('Booking not found');
-            return deleted;
+            return { success: true };
         } catch (error) {
             if (error instanceof NotFoundException) throw error;
             throw new InternalServerErrorException('Failed to delete booking');

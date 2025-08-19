@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, UserRole } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-
-const prisma = new PrismaClient();
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class DashboardService {
@@ -10,20 +8,69 @@ export class DashboardService {
 
     async getStats(userId?: number, role?: string) {
         if (role === UserRole.super_admin) {
-        const users = await this.prisma.user.count();
-        const courts = await this.prisma.court.count();
-        const bookings = await this.prisma.booking.count();
-        return { users, courts, bookings };
+            const [totalUsers, activeCourts, totalBookings, totalRevenue, recentBookings, upcomingBookings] = await Promise.all([
+                this.prisma.user.count(),
+                this.prisma.court.count({ where: { isActive: true } }),
+                this.prisma.booking.count(),
+                this.prisma.booking.aggregate({ _sum: { totalPrice: true } }).then(r => r._sum.totalPrice || 0),
+                this.prisma.booking.findMany({
+                    orderBy: { createdAt: 'desc' },
+                    take: 5,
+                    include: { court: true, user: true }
+                }),
+                this.prisma.booking.findMany({
+                    where: {
+                        date: { gte: new Date().toISOString().slice(0, 10) },
+                        status: 'confirmed',
+                    },
+                    orderBy: { date: 'asc' },
+                    take: 5,
+                    include: { court: true, user: true }
+                })
+            ]);
+            return {
+                totalUsers,
+                activeCourts,
+                totalBookings,
+                totalRevenue,
+                recentBookings,
+                upcomingBookings
+            };
         }
         if (role === UserRole.field_owner && userId) {
-        const courts = await this.prisma.court.count({ where: { ownerId: userId } });
-        const bookings = await this.prisma.booking.count({ where: { court: { ownerId: userId } } });
-        return { courts, bookings };
+            const [activeCourts, totalBookings, totalRevenue, recentBookings, upcomingBookings] = await Promise.all([
+                this.prisma.court.count({ where: { ownerId: userId, isActive: true } }),
+                this.prisma.booking.count({ where: { court: { ownerId: userId } } }),
+                this.prisma.booking.aggregate({
+                    where: { court: { ownerId: userId } },
+                    _sum: { totalPrice: true }
+                }).then(r => r._sum.totalPrice || 0),
+                this.prisma.booking.findMany({
+                    where: { court: { ownerId: userId } },
+                    orderBy: { createdAt: 'desc' },
+                    take: 5,
+                    include: { court: true, user: true }
+                }),
+                this.prisma.booking.findMany({
+                    where: {
+                        court: { ownerId: userId },
+                        date: { gte: new Date().toISOString().slice(0, 10) },
+                        status: 'confirmed',
+                    },
+                    orderBy: { date: 'asc' },
+                    take: 5,
+                    include: { court: true, user: true }
+                })
+            ]);
+            return {
+                activeCourts,
+                totalBookings,
+                totalRevenue,
+                recentBookings,
+                upcomingBookings
+            };
         }
-        if (role === UserRole.regular_user && userId) {
-        const bookings = await this.prisma.booking.count({ where: { userId } });
-        return { bookings };
-        }
+        // Regular users are redirected and do not see dashboard
         return {};
     }
 }

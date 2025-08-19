@@ -1,98 +1,175 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="https://nestjs.com/img/logo-small.svg" width="100" alt="NestJS Logo" />
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Dribble Backend API
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**Book. Play. Score.**
 
-## Description
+A robust, production-ready RESTful API for managing futsal court bookings, users, and schedules. Built with [NestJS](https://nestjs.com/), [Prisma ORM](https://www.prisma.io/), and [PostgreSQL](https://www.postgresql.org/).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 🚀 Features
+- User authentication (JWT, role-based access)
+- Court management (CRUD)
+- Booking management (CRUD, schedule conflict prevention)
+- Dashboard analytics endpoints
+- Fully documented API with Swagger (OpenAPI)
+- DTO validation and error handling
 
+---
+
+## 🛠️ Tech Stack
+| Category      | Technology         |
+|---------------|-------------------|
+| Framework     | [NestJS](https://nestjs.com/) |
+| ORM           | [Prisma](https://www.prisma.io/) |
+| Database      | PostgreSQL        |
+| Auth          | JWT, Passport     |
+| Docs          | Swagger (OpenAPI) |
+| Language      | TypeScript        |
+| Testing       | Jest, Supertest   |
+
+---
+
+## 📦 Prerequisites
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- [PostgreSQL](https://www.postgresql.org/) instance
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+---
+
+## ⚡ Getting Started
+
+Clone the repository and install dependencies:
 ```bash
+# Clone
+$ git clone https://github.com/Revou-FSSE-Feb25/final-project-be-MuhammadIrfanDzaky.git
+$ cd final-project-be-MuhammadIrfanDzaky
+
+# Install dependencies
 $ npm install
 ```
 
-## Compile and run the project
+Set up your environment variables:
+```bash
+# Copy and edit .env file
+$ cp .env.example .env
+# Edit .env with your DB credentials
+```
+
+Generate Prisma client and run migrations:
+```bash
+$ npx prisma generate
+$ npx prisma migrate dev --name init
+```
+
+Seed the database (optional):
+```bash
+$ npx ts-node prisma/seed.ts
+```
+
+---
+
+## 🏃 Running the Server
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
+# Development
 $ npm run start:dev
 
-# production mode
+# Production
 $ npm run start:prod
 ```
 
-## Run tests
+API will be available at: `http://localhost:3001`
+
+---
+
+## 🧪 Testing
 
 ```bash
-# unit tests
+# Unit tests
 $ npm run test
 
-# e2e tests
+# E2E tests
 $ npm run test:e2e
 
-# test coverage
+# Test coverage
 $ npm run test:cov
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 📖 API Documentation
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- **Swagger UI:** [http://localhost:3001/api-docs](http://localhost:3001/api-docs)
+- All endpoints, request/response DTOs, and error models are documented.
+- Example endpoints:
+  - `POST /auth/login` — User login
+  - `POST /auth/register` — User registration
+  - `GET /courts` — List all courts
+  - `POST /bookings` — Create a booking
+  - `GET /dashboard/summary` — Dashboard analytics
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+---
+
+## 🏗️ Project Structure
+
+```
+final-project-be-MuhammadIrfanDzaky/
+├── src/
+│   ├── auth/         # Auth module (JWT, login, register)
+│   ├── users/        # User management
+│   ├── courts/       # Court management
+│   ├── bookings/     # Booking management
+│   ├── dashboard/    # Analytics endpoints
+│   └── global/       # Guards, middlewares
+├── prisma/           # Prisma schema, migrations, seed
+├── test/             # E2E tests
+└── ...
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 🚀 Deployment
 
-Check out a few resources that may come in handy when working with NestJS:
+- Configure your production `.env` with the correct database and JWT secrets.
+- Build the project:
+  ```bash
+  npm run build
+  ```
+- Start with Node.js:
+  ```bash
+  node dist/main.js
+  ```
+- Or use a process manager (e.g., PM2, Docker, etc.)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 🖼️ Diagrams
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+> _Add architecture or ER diagrams here if available._
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 🤝 Contributing
 
-## License
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feature/feature-name`)
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+## 📫 Contact & Support
+- Project by Muhammad Irfan Dzaky
+- For issues, use the GitHub Issues tab
+- For questions, contact: [your-email@example.com]
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.
