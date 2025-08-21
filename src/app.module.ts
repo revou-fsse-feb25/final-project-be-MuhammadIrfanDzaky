@@ -10,24 +10,12 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { JwtMiddleware } from './global/jwt.middleware';
 import { ValidationMiddleware } from './global/validation.middleware';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    PrismaModule,
-    UsersModule,
-    AuthModule,
-    BookingsModule,
-    CourtsModule,
-    DashboardModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secret',
-      signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1d' },
-    }),
-  ],
+  imports: [PrismaModule,UsersModule, AuthModule, BookingsModule, CourtsModule, DashboardModule, JwtModule.register({
+    secret: process.env.JWT_SECRET || 'secret',
+    signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1d' },
+  })],
   controllers: [AppController],
   providers: [AppService, JwtService],
 })
