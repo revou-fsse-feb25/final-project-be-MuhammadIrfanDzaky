@@ -17,7 +17,7 @@ export class AuthService {
 		const valid = await bcrypt.compare(password, user.password);
 		if (!valid) throw new BadRequestException('Invalid credentials');
 		const token = this.jwtService.sign({ sub: user.id, role: user.role });
-		// Return all required fields for LoginResDto.user
+
 		const { id, email: userEmail, name, role, isActive, createdAt, updatedAt } = user;
 		return {
 			token,
@@ -25,7 +25,7 @@ export class AuthService {
 		};
 	}
 
-	async register(data: { email: string; name: string; password: string; role?: UserRole }) {
+	async register(data: { email: string; name: string; phone: string; role: UserRole; password: string; }) {
 		const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
 		if (existing) throw new BadRequestException('Email already registered');
 		const hashed = await bcrypt.hash(data.password, 10);
@@ -33,8 +33,9 @@ export class AuthService {
 			data: {
 				email: data.email,
 				name: data.name,
-				password: hashed,
+				phone: data.phone,
 				role: data.role || UserRole.regular_user,
+				password: hashed,
 				isActive: true,
 			},
 		});

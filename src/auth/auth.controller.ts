@@ -31,12 +31,13 @@ export class AuthController {
 	@ApiResponse({ status: 201, description: 'User registered.' })
 	async register(@Body() body: RegisterDto): Promise<RegisterResDto> {
 		try {
-			const { email, name, password, role } = body;
+			const { email, name, phone, role, password  } = body;
 			return await this.authService.register({
 				email,
 				name,
-				password,
+				phone,
 				role: role ? (UserRole as any)[role] : undefined,
+				password,
 			});
 		} catch (error) {
 			console.error(error);
