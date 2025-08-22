@@ -24,8 +24,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
 
+  const allowOrigin = ['http://localhost:3001', 'http://localhost:3000', 'https://final-project-fe-muhammad-irfan-dza.vercel.app'];
+
   app.enableCors({
-    origin: ['http://localhost:3001', 'https://final-project-fe-muhammad-irfan-dza.vercel.app'],
+    origin: allowOrigin,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: ['Content-Type', 'Authorization'],
