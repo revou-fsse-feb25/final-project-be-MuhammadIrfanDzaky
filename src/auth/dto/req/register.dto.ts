@@ -21,4 +21,8 @@ export class RegisterDto {
     @ApiProperty({ example: 'yourpassword' })
     @IsString()
     password: string;
+
+    @ApiProperty({ example: 'yourpassword' })
+    @IsString()
+    confirmPassword: string;
 }
