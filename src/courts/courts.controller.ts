@@ -32,7 +32,7 @@ export class CourtsController {
     @ApiOperation({ summary: 'Get court by ID' })
     @ApiParam({ name: 'id', type: String })
     @ApiResponse({ status: 200, description: 'Court details.' })
-    async getById(@Param('id') id: string): Promise<CreateCourtResDto> {
+    async getById(@Param('id') id: number): Promise<CreateCourtResDto> {
         try {
             const court = await this.courtsService.getById(Number(id));
             if (!court) throw new NotFoundException('Court not found');
@@ -64,7 +64,7 @@ export class CourtsController {
     @ApiOperation({ summary: 'Update a court' })
     @ApiParam({ name: 'id', type: String })
     @ApiResponse({ status: 200, description: 'Court updated.' })
-    async update(@Param('id') id: string, @Body() courtData: UpdateCourtDto): Promise<UpdateCourtResDto> {
+    async update(@Param('id') id: number, @Body() courtData: UpdateCourtDto): Promise<UpdateCourtResDto> {
         try {
             if (!courtData) throw new BadRequestException('Court data is required');
             const updated = await this.courtsService.update(Number(id), courtData);

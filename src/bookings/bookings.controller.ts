@@ -27,7 +27,7 @@ export class BookingsController {
     @ApiOperation({ summary: 'Get bookings by user ID' })
     @ApiParam({ name: 'userId', type: String })
     @ApiResponse({ status: 200, description: 'List of bookings for a user.' })
-    async getByUserId(@Param('userId') userId: string): Promise<CreateBookingResDto[]> {
+    async getByUserId(@Param('userId') userId: number): Promise<CreateBookingResDto[]> {
         try {
             const bookings = await this.bookingsService.getByUserId(Number(userId));
             if (!bookings) throw new NotFoundException('Bookings not found for user');
@@ -42,7 +42,7 @@ export class BookingsController {
     @ApiOperation({ summary: 'Get bookings by court ID' })
     @ApiParam({ name: 'courtId', type: String })
     @ApiResponse({ status: 200, description: 'List of bookings for a court.' })
-    async getByCourtId(@Param('courtId') courtId: string): Promise<CreateBookingResDto[]> {
+    async getByCourtId(@Param('courtId') courtId: number): Promise<CreateBookingResDto[]> {
         try {
             const bookings = await this.bookingsService.getByCourtId(Number(courtId));
             if (!bookings) throw new NotFoundException('Bookings not found for court');
@@ -70,7 +70,7 @@ export class BookingsController {
     @ApiOperation({ summary: 'Update a booking' })
     @ApiParam({ name: 'id', type: String })
     @ApiResponse({ status: 200, description: 'Booking updated.' })
-    async update(@Param('id') id: string, @Body() bookingData: UpdateBookingDto): Promise<UpdateBookingResDto> {
+    async update(@Param('id') id: number, @Body() bookingData: UpdateBookingDto): Promise<UpdateBookingResDto> {
         try {
             if (!bookingData) throw new BadRequestException('Booking data is required');
             const updated = await this.bookingsService.update(Number(id), bookingData);
@@ -86,7 +86,7 @@ export class BookingsController {
     @ApiOperation({ summary: 'Delete a booking' })
     @ApiParam({ name: 'id', type: String })
     @ApiResponse({ status: 200, description: 'Booking deleted.' })
-    async delete(@Param('id') id: string): Promise<{ success: boolean }> {
+    async delete(@Param('id') id: number): Promise<{ success: boolean }> {
         try {
             const deleted = await this.bookingsService.delete(Number(id));
             if (!deleted) throw new NotFoundException('Booking not found');

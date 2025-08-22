@@ -32,7 +32,7 @@ export class UsersController {
 	@ApiOperation({ summary: 'Get user by ID' })
 	@ApiParam({ name: 'id', type: String })
 	@ApiResponse({ status: 200, description: 'User details.' })
-	async getById(@Param('id') id: string): Promise<CreateUserResDto> {
+	async getById(@Param('id') id: number): Promise<CreateUserResDto> {
 		try {
 			const user = await this.usersService.getById(Number(id));
 			if (!user) throw new NotFoundException('User not found');
@@ -51,7 +51,7 @@ export class UsersController {
 	@ApiOperation({ summary: 'Update a user' })
 	@ApiParam({ name: 'id', type: String })
 	@ApiResponse({ status: 200, description: 'User updated.' })
-	async update(@Param('id') id: string, @Body() data: UpdateUserDto): Promise<UpdateUserResDto> {
+	async update(@Param('id') id: number, @Body() data: UpdateUserDto): Promise<UpdateUserResDto> {
 		try {
 			if (!data) throw new BadRequestException('User data is required');
 			const updated = await this.usersService.update(Number(id), data);
