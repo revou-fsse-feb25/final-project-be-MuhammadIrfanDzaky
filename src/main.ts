@@ -25,7 +25,7 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document);
 
   app.enableCors({
-    origin: true,
+    origin: [ 'https://final-project-fe-muhammad-irfan-dza.vercel.app' ],
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type,Authorization',
