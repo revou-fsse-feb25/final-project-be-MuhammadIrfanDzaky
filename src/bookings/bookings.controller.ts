@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, InternalServerErrorException, NotFoundException, BadRequestException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Param, Body, InternalServerErrorException, NotFoundException, BadRequestException, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateBookingDto } from './dto/req/create-booking.dto';
 import { UpdateBookingDto } from './dto/req/update-booking.dto';
@@ -73,6 +73,22 @@ export class BookingsController {
     @ApiParam({ name: 'id', type: String })
     @ApiResponse({ status: 200, description: 'Booking updated.' })
     async update(@Param('id') id: number, @Body() bookingData: UpdateBookingDto): Promise<UpdateBookingResDto> {
+        try {
+            if (!bookingData) throw new BadRequestException('Booking data is required');
+            const updated = await this.bookingsService.update(Number(id), bookingData);
+            if (!updated) throw new NotFoundException('Booking not found');
+            return updated;
+        } catch (error) {
+            if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
+            throw new InternalServerErrorException('Failed to update booking');
+        }
+    }
+
+    @Patch(':id')
+    @ApiOperation({ summary: 'Partially update a booking' })
+    @ApiParam({ name: 'id', type: String })
+    @ApiResponse({ status: 200, description: 'Booking updated.' })
+    async patch(@Param('id') id: number, @Body() bookingData: Partial<UpdateBookingDto>): Promise<UpdateBookingResDto> {
         try {
             if (!bookingData) throw new BadRequestException('Booking data is required');
             const updated = await this.bookingsService.update(Number(id), bookingData);
