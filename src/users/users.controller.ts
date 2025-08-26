@@ -1,3 +1,4 @@
+	// ...existing code...
 import { Controller, Get, Param, Put, Delete, Body, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UpdateUserResDto } from './dto/res/update-user-res.dto';
@@ -75,6 +76,19 @@ export class UsersController {
 		} catch (error) {
 			if (error instanceof NotFoundException) throw error;
 			throw new InternalServerErrorException('Failed to delete user');
+		}
+	}
+
+	@Get('new-this-week')
+	@ApiOperation({ summary: 'Get count of new users this week' })
+	@ApiParam({ name: 'id', type: String })
+	@ApiResponse({ status: 200, description: 'Count of new users this week.' })
+	async getNewUsersThisWeek(): Promise<{ count: number }> {
+		try {
+			const count = await this.usersService.countNewThisWeek();
+			return { count };
+		} catch (error) {
+			throw new InternalServerErrorException('Failed to fetch new users this week');
 		}
 	}
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 
+
 const prisma = new PrismaClient();
 
 @Injectable()
@@ -22,5 +23,17 @@ export class UsersService {
 
 	async delete(id: number) {
 		return this.prisma.user.delete({ where: { id } });
+	}
+
+	async countNewThisWeek() {
+		const now = new Date();
+		const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+		return this.prisma.user.count({
+			where: {
+				createdAt: {
+					gte: weekAgo,
+				},
+			},
+		});
 	}
 }

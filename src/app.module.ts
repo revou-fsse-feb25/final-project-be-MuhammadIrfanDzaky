@@ -6,14 +6,13 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { CourtsModule } from './courts/courts.module';
-import { DashboardModule } from './dashboard/dashboard.module';
 import { JwtMiddleware } from './global/jwt.middleware';
 import { ValidationMiddleware } from './global/validation.middleware';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
-  imports: [PrismaModule,UsersModule, AuthModule, BookingsModule, CourtsModule, DashboardModule, JwtModule.register({
+  imports: [PrismaModule,UsersModule, AuthModule, BookingsModule, CourtsModule, JwtModule.register({
     secret: process.env.JWT_SECRET || 'secret',
     signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1d' },
   })],
@@ -56,7 +55,7 @@ export class AppModule {
       .forRoutes(
         { path: 'auth/login', method: RequestMethod.POST },
         { path: 'auth/register', method: RequestMethod.POST },
-        { path: '*' , method: RequestMethod.OPTIONS }
+        { path: '*path', method: RequestMethod.OPTIONS }
       );
   }
 }
