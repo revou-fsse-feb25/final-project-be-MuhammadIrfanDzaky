@@ -29,7 +29,15 @@ export class BookingsService {
     }
 
     async create(data: any) {
-        return this.prisma.booking.create({ data });
+        try {
+            console.log('Creating booking with data:', data);
+            const result = await this.prisma.booking.create({ data });
+            console.log('Booking created:', result);
+            return result;
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            throw error;
+        }
     }
 
     async update(id: number, data: any) {
