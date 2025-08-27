@@ -1,8 +1,6 @@
-	// ...existing code...
-import { Controller, Get, Param, Put, Delete, Body, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Param, Put, Delete, Body, InternalServerErrorException, NotFoundException, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UpdateUserResDto } from './dto/res/update-user-res.dto';
-import { DeleteUserDto } from './dto/req/delete-user.dto';
 import { UpdateUserDto } from './dto/req/update-user.dto';
 import { CreateUserResDto } from './dto/res/create-user-res.dto';
 import { UsersService } from './users.service';
@@ -28,14 +26,27 @@ export class UsersController {
 			throw new InternalServerErrorException('Failed to fetch users');
 		}
 	}
+	
+	@Get('new-this-week')
+	@ApiOperation({ summary: 'Get count of new users this week' })
+	@ApiParam({ name: 'id', type: String })
+	@ApiResponse({ status: 200, description: 'Count of new users this week.' })
+	async getNewUsersThisWeek(): Promise<{ count: number }> {
+		try {
+			const count = await this.usersService.countNewThisWeek();
+			return { count };
+		} catch (error) {
+			throw new InternalServerErrorException('Failed to fetch new users this week');
+		}
+	}
 
 	@Get(':id')
 	@ApiOperation({ summary: 'Get user by ID' })
 	@ApiParam({ name: 'id', type: String })
 	@ApiResponse({ status: 200, description: 'User details.' })
-	async getById(@Param('id') id: number): Promise<CreateUserResDto> {
+	async getById(@Param('id', ParseIntPipe) id: number): Promise<CreateUserResDto> {
 		try {
-			const user = await this.usersService.getById(Number(id));
+			const user = await this.usersService.getById(id);
 			if (!user) throw new NotFoundException('User not found');
 			return {
 				...user,
@@ -52,10 +63,10 @@ export class UsersController {
 	@ApiOperation({ summary: 'Update a user' })
 	@ApiParam({ name: 'id', type: String })
 	@ApiResponse({ status: 200, description: 'User updated.' })
-	async update(@Param('id') id: number, @Body() data: UpdateUserDto): Promise<UpdateUserResDto> {
+	async update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateUserDto): Promise<UpdateUserResDto> {
 		try {
 			if (!data) throw new BadRequestException('User data is required');
-			const updated = await this.usersService.update(Number(id), data);
+			const updated = await this.usersService.update(id, data);
 			if (!updated) throw new NotFoundException('User not found');
 			return updated;
 		} catch (error) {
@@ -66,29 +77,16 @@ export class UsersController {
 
 	@Delete(':id')
 	@ApiOperation({ summary: 'Delete a user' })
-	@ApiParam({ name: 'id', type: String })
+	@ApiParam({ name: 'id', type: Number })
 	@ApiResponse({ status: 200, description: 'User deleted.' })
-	async delete(@Param() params: DeleteUserDto): Promise<{ success: boolean }> {
-		try {
-			const deleted = await this.usersService.delete(params.id);
-			if (!deleted) throw new NotFoundException('User not found');
-			return { success: true };
-		} catch (error) {
-			if (error instanceof NotFoundException) throw error;
-			throw new InternalServerErrorException('Failed to delete user');
-		}
+	async delete(@Param('id', ParseIntPipe) id: number): Promise<{ success: boolean }> {
+	try {
+		const deleted = await this.usersService.delete(id);
+		if (!deleted) throw new NotFoundException('User not found');
+		return { success: true };
+	} catch (error) {
+		if (error instanceof NotFoundException) throw error;
+		throw new InternalServerErrorException('Failed to delete user');
 	}
-
-	@Get('new-this-week')
-	@ApiOperation({ summary: 'Get count of new users this week' })
-	@ApiParam({ name: 'id', type: String })
-	@ApiResponse({ status: 200, description: 'Count of new users this week.' })
-	async getNewUsersThisWeek(): Promise<{ count: number }> {
-		try {
-			const count = await this.usersService.countNewThisWeek();
-			return { count };
-		} catch (error) {
-			throw new InternalServerErrorException('Failed to fetch new users this week');
-		}
 	}
 }
