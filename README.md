@@ -4,7 +4,10 @@
 
 # Dribble Backend API
 
+
 **Book. Play. Score.**
+
+> **Live API:** [https://final-project-be-muhammadirfandzaky-production.up.railway.app/](https://final-project-be-muhammadirfandzaky-production.up.railway.app/)
 
 A robust, production-ready RESTful API for managing futsal court bookings, users, and schedules. Built with [NestJS](https://nestjs.com/), [Prisma ORM](https://www.prisma.io/), and [PostgreSQL](https://www.postgresql.org/).
 
@@ -29,7 +32,7 @@ A robust, production-ready RESTful API for managing futsal court bookings, users
 | Auth          | JWT, Passport     |
 | Docs          | Swagger (OpenAPI) |
 | Language      | TypeScript        |
-| Testing       | Jest, Supertest   |
+| Testing       | Jest   |
 
 ---
 
@@ -147,9 +150,11 @@ final-project-be-MuhammadIrfanDzaky/
 
 ---
 
-## 🖼️ Diagrams
+## 🖼️ Entity Relationship Diagram (ERD)
 
-> _Add architecture or ER diagrams here if available._
+![ERD](ERD.png)
+
+The diagram above illustrates the relationships between the main entities in the application, such as User, Court, Booking, and other related entities. This ERD helps to understand the database structure and the relationships between tables used in the futsal court booking system.
 
 ---
 
